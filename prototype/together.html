@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Together</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=Kumbh+Sans:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">&#9825;</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="story.html">Our Story</a></li>
+    <li><a href="together.html" class="is-active">Together</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <div class="page-header">
+    <span class="h1" style="font-size: clamp(2.5rem, 2rem + 7vw, 8rem);">Together</span>
+    <p class="note">Since July 13, 2024 &middot; Thailand time</p>
+  </div>
+
+  <div class="counter">
+    <p class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;" id="counter-summary" aria-live="polite">Loading counter&#8230;</p>
+
+    <div class="counter-hero" aria-hidden="true">
+      <span class="h1" id="c-years">0</span>
+      <span class="note counter-hero-label" id="c-years-label">years together</span>
+    </div>
+
+    <div class="counter-units" aria-hidden="true">
+      <div class="counter-unit">
+        <span class="counter-unit-value" id="c-days">0000</span>
+        <span class="note">days</span>
+      </div>
+      <div class="counter-unit">
+        <span class="counter-unit-value" id="c-hours">00</span>
+        <span class="note">hours</span>
+      </div>
+      <div class="counter-unit">
+        <span class="counter-unit-value" id="c-mins">00</span>
+        <span class="note">minutes</span>
+      </div>
+      <div class="counter-unit">
+        <span class="counter-unit-value" id="c-secs">00</span>
+        <span class="note">seconds</span>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <div class="footer-statement">
+    <p class="h2">[Placeholder &mdash; your personal closing line goes here]</p>
+  </div>
+
+  <div class="footer-columns">
+    <div>
+      <div class="footer-col-label">( Menu )</div>
+      <ul class="footer-col-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="story.html">Our Story</a></li>
+        <li><a href="together.html">Together</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-label">( For You )</div>
+      <ul class="footer-col-links">
+        <li><span>Since July 13, 2024</span></li>
+        <li><span>Made with love</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <a href="#top" class="footer-mark">&#9825;</a>
+  </div>
+
+  <div class="footer-meta">
+    <span>&copy; 2026</span>
+    <span>2 Years &#9825;</span>
+  </div>
+</footer>
+
+<script>
+  var START = new Date('2024-07-13T00:00:00+07:00');
+
+  function calcYears(start, now) {
+    var years = now.getFullYear() - start.getFullYear();
+    var anniversary = new Date(now.getFullYear(), start.getMonth(), start.getDate());
+    if (now < anniversary) years--;
+    return years;
+  }
+
+  function pad(n) {
+    return String(n).padStart(2, '0');
+  }
+
+  function tick() {
+    var now = new Date();
+    var diffMs = now - START;
+    var totalSeconds = Math.floor(diffMs / 1000);
+
+    var days = Math.floor(totalSeconds / 86400);
+    var hours = Math.floor((totalSeconds % 86400) / 3600);
+    var minutes = Math.floor((totalSeconds % 3600) / 60);
+    var seconds = totalSeconds % 60;
+    var years = calcYears(START, now);
+
+    document.getElementById('c-years').textContent = years;
+    document.getElementById('c-years-label').textContent = (years === 1 ? 'year' : 'years') + ' together';
+    document.getElementById('c-days').textContent = days;
+    document.getElementById('c-hours').textContent = pad(hours);
+    document.getElementById('c-mins').textContent = pad(minutes);
+    document.getElementById('c-secs').textContent = pad(seconds);
+
+    document.getElementById('counter-summary').textContent =
+      'We have been together for ' + years + (years === 1 ? ' year' : ' years') + ' and ' + days + ' days.';
+  }
+
+  tick();
+  setInterval(tick, 1000);
+</script>
+
+</body>
+</html>
