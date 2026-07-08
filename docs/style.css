@@ -8,13 +8,11 @@
 :root {
   --bg: #EFEDEA;
   --fg: #191919;
-  --white: #FFFFFF;
   --footer-bg: #121212;
   --footer-fg: #F5F3EF;
 
   --placeholder-bg: #D9D2C4;
   --placeholder-border: #B7AD98;
-  --placeholder-label: #6E6656;
 
   --section-gap: clamp(80px, 14vw, 200px);
   --page-margin: 24px;
@@ -174,9 +172,20 @@ a { color: inherit; text-decoration: none; }
 .hero-circle {
   aspect-ratio: 1 / 1;
   height: clamp(1.4rem, 0.9rem + 3.7vw, 5.3rem);
-  border-radius: 50%;
   overflow: hidden;
   position: relative;
+  background: var(--placeholder-bg);
+  /* The brackets' visual "middle" (where their ink actually sits) is
+     lower than their line box's geometric center, so a box-centered
+     square reads as sitting slightly too high between them. */
+  transform: translateY(7%);
+}
+
+.hero-cycle-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .hero-note-row {
@@ -204,115 +213,6 @@ a { color: inherit; text-decoration: none; }
   white-space: nowrap;
   top: 50%;
   translate: 0 -50%;
-}
-
-/* ==========================================================================
-   Placeholder image boxes
-   ========================================================================== */
-
-.placeholder {
-  background: var(--placeholder-bg);
-  border: 1px solid var(--placeholder-border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-}
-
-.placeholder-label {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--placeholder-label);
-  text-align: center;
-  padding: 8px;
-}
-
-/* ==========================================================================
-   Pinboard (index page — "a few sweet photos", pinned at angles)
-   ========================================================================== */
-
-.pinboard {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 28px 18px;
-  padding: 40px var(--page-margin) 20px;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.pin-photo {
-  position: relative;
-  width: 140px;
-  background: var(--white);
-  padding: 8px 8px 22px;
-  box-shadow: 0 10px 22px rgba(25, 25, 25, 0.14);
-  transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
-}
-
-.pin-photo:hover {
-  transform: rotate(0deg) scale(1.04) !important;
-  box-shadow: 0 18px 36px rgba(25, 25, 25, 0.2);
-  z-index: 5;
-}
-
-.pin-photo::before {
-  content: '';
-  position: absolute;
-  top: -7px;
-  left: 50%;
-  translate: -50% 0;
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  background: var(--fg);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
-}
-
-.pin-photo .placeholder-wrap {
-  aspect-ratio: 4 / 5;
-}
-
-.pin-photo:nth-child(6n+1) { transform: rotate(-5deg); margin-top: 6px; }
-.pin-photo:nth-child(6n+2) { transform: rotate(4deg); width: 155px; }
-.pin-photo:nth-child(6n+3) { transform: rotate(-2deg); margin-top: 26px; }
-.pin-photo:nth-child(6n+4) { transform: rotate(6deg); margin-top: 2px; }
-.pin-photo:nth-child(6n+5) { transform: rotate(-6deg); width: 130px; margin-top: 20px; }
-.pin-photo:nth-child(6n+6) { transform: rotate(3deg); }
-
-/* Desktop: scattered corkboard via CSS grid — deterministic placement,
-   no column-balance gaps (column-count left large unpredictable gaps
-   when combined with break-inside: avoid) */
-@media (min-width: 860px) {
-  .pinboard {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 40px;
-    row-gap: 44px;
-    max-width: 660px;
-    padding-top: 60px;
-    align-items: start;
-    justify-items: center;
-  }
-
-  .pin-photo {
-    width: 80%;
-    margin: 0;
-  }
-
-  .pin-photo:nth-child(6n+1) { transform: rotate(-6deg) translate(-6px, 4px); }
-  .pin-photo:nth-child(6n+2) { transform: rotate(5deg) translate(4px, -8px); width: 64%; }
-  .pin-photo:nth-child(6n+3) { transform: rotate(-3deg) translate(4px, 12px); }
-  .pin-photo:nth-child(6n+4) { transform: rotate(7deg) translate(-8px, -4px); width: 88%; }
-  .pin-photo:nth-child(6n+5) { transform: rotate(-8deg) translate(4px, 8px); width: 58%; }
-  .pin-photo:nth-child(6n+6) { transform: rotate(4deg) translate(-4px, -10px); }
 }
 
 /* ==========================================================================
@@ -552,8 +452,71 @@ a { color: inherit; text-decoration: none; }
   .flow-stop.big .flow-photo { height: auto; width: 100%; max-width: 320px; }
   .footer-columns { gap: 48px; }
   .hero-note { display: none; }
-  .pinboard { gap: 24px 14px; }
-  .pin-photo,
-  .pin-photo:nth-child(6n+2),
-  .pin-photo:nth-child(6n+5) { width: 39vw; }
+}
+
+/* ==========================================================================
+   Preloader — asterisk / (square photo) / percent, cycling on page load
+   ========================================================================== */
+
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s var(--ease);
+}
+
+.preloader.is-done {
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.preloading {
+  overflow: hidden;
+}
+
+.preloader-inner {
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 2vw, 22px);
+}
+
+.preloader-asterisk {
+  font-family: 'Kumbh Sans', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.3rem, 1rem + 2vw, 2.5rem);
+}
+
+.preloader-bracket {
+  font-family: 'Kumbh Sans', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 1.5rem + 4vw, 4.5rem);
+  line-height: 1;
+}
+
+.preloader-image-wrap {
+  width: clamp(3.4rem, 2.8rem + 5vw, 7rem);
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--placeholder-bg);
+  flex-shrink: 0;
+}
+
+.preloader-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.preloader-percent {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: clamp(0.85rem, 0.7rem + 1vw, 1.15rem);
+  color: var(--fg);
+  min-width: 3.4em;
+  font-variant-numeric: tabular-nums;
 }

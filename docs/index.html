@@ -11,6 +11,23 @@
 </head>
 <body>
 
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="preloader-inner">
+    <span class="preloader-asterisk">&#10035;</span>
+    <span class="preloader-bracket">(</span>
+    <div class="preloader-image-wrap">
+      <img id="preloader-img" src="photos/202406101.jpeg" alt="" class="preloader-image">
+    </div>
+    <span class="preloader-bracket">)</span>
+    <span class="preloader-percent" id="preloader-percent">0%</span>
+  </div>
+</div>
+<script>
+  if (sessionStorage.getItem('anniversaryPreloaderShown')) {
+    document.getElementById('preloader').style.display = 'none';
+  }
+</script>
+
 <nav class="nav">
   <a href="index.html" class="nav-logo">&#9825;</a>
   <ul class="nav-links">
@@ -33,9 +50,7 @@
       <span class="h1">Two</span>
       <span class="hero-bracket">(</span>
       <div class="hero-circle">
-        <div class="placeholder">
-          <span class="placeholder-label">Photo&#58; you two</span>
-        </div>
+        <img id="hero-cycle-img" class="hero-cycle-image" src="photos/20241031.jpeg" alt="Photos of us">
       </div>
       <span class="hero-bracket">)</span>
       <span class="h1">Years</span>
@@ -47,60 +62,6 @@
 
   <section class="section-intro">
     <p class="h3">[Placeholder &mdash; a short, sweet line goes here]</p>
-  </section>
-
-  <section class="section">
-    <div class="pinboard">
-
-      <div class="pin-photo">
-        <div class="placeholder-wrap">
-          <div class="placeholder"><span class="placeholder-label">Photo 1</span></div>
-        </div>
-      </div>
-
-      <div class="pin-photo">
-        <div class="placeholder-wrap">
-          <div class="placeholder"><span class="placeholder-label">Photo 2</span></div>
-        </div>
-      </div>
-
-      <div class="pin-photo">
-        <div class="placeholder-wrap">
-          <div class="placeholder"><span class="placeholder-label">Photo 3</span></div>
-        </div>
-      </div>
-
-      <div class="pin-photo">
-        <div class="placeholder-wrap">
-          <div class="placeholder"><span class="placeholder-label">Photo 4</span></div>
-        </div>
-      </div>
-
-      <div class="pin-photo">
-        <div class="placeholder-wrap">
-          <div class="placeholder"><span class="placeholder-label">Photo 5</span></div>
-        </div>
-      </div>
-
-      <div class="pin-photo">
-        <div class="placeholder-wrap">
-          <div class="placeholder"><span class="placeholder-label">Photo 6</span></div>
-        </div>
-      </div>
-
-      <div class="pin-photo">
-        <div class="placeholder-wrap">
-          <div class="placeholder"><span class="placeholder-label">Photo 7</span></div>
-        </div>
-      </div>
-
-      <div class="pin-photo">
-        <div class="placeholder-wrap">
-          <div class="placeholder"><span class="placeholder-label">Photo 8</span></div>
-        </div>
-      </div>
-
-    </div>
   </section>
 
 </main>
@@ -138,5 +99,6 @@
   </div>
 </footer>
 
+<script src="preloader.js"></script>
 </body>
 </html>
