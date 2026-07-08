@@ -13,11 +13,15 @@
 
   --placeholder-bg: #D9D2C4;
   --placeholder-border: #B7AD98;
+  --hairline: rgba(25, 25, 25, 0.1);
 
   --section-gap: clamp(80px, 14vw, 200px);
-  --page-margin: 24px;
+  --page-margin: clamp(20px, 2.6vw, 40px);
 
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Adcker's own curves: media fades and text-link underlines */
+  --ease-media: cubic-bezier(0.82, 0, 0.18, 1);
+  --ease-link: cubic-bezier(0.9, 0, 0.1, 1);
 }
 
 * { box-sizing: border-box; }
@@ -30,11 +34,17 @@ body {
   color: var(--fg);
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 img, video { max-width: 100%; display: block; }
 
 a { color: inherit; text-decoration: none; }
+
+::selection { background: var(--fg); color: var(--bg); }
+
+:focus-visible { outline: 1px solid currentColor; outline-offset: 4px; }
 
 /* ==========================================================================
    Typography scale
@@ -45,8 +55,8 @@ a { color: inherit; text-decoration: none; }
   font-weight: 700;
   text-transform: uppercase;
   font-size: clamp(1.8rem, 1.1rem + 5.7vw, 9rem);
-  line-height: 0.86;
-  letter-spacing: -0.03em;
+  line-height: 0.82;
+  letter-spacing: -0.045em;
   text-align: center;
   margin: 0;
   overflow-wrap: break-word;
@@ -56,8 +66,8 @@ a { color: inherit; text-decoration: none; }
   font-family: 'Newsreader', serif;
   font-weight: 500;
   font-size: clamp(2rem, 1.4rem + 3vw, 4.25rem);
-  line-height: 1.05;
-  letter-spacing: -0.01em;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
   margin: 0;
 }
 
@@ -65,17 +75,18 @@ a { color: inherit; text-decoration: none; }
   font-family: 'Newsreader', serif;
   font-weight: 500;
   font-size: clamp(1.4rem, 1rem + 1.5vw, 2.25rem);
-  line-height: 1.15;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
   margin: 0;
 }
 
 .note {
   font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  opacity: 0.5;
+  letter-spacing: 0.14em;
+  opacity: 0.45;
   margin: 0;
 }
 
@@ -129,17 +140,39 @@ a { color: inherit; text-decoration: none; }
 }
 
 .nav-links a {
+  position: relative;
+  display: inline-block;
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   opacity: 0.85;
-  transition: opacity 0.2s;
+  transition: opacity 0.3s var(--ease);
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s var(--ease-link);
 }
 
 .nav-links a:hover { opacity: 1; }
 
-.nav-links a.is-active { opacity: 1; text-decoration: underline; text-underline-offset: 4px; }
+.nav-links a:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.nav-links a.is-active { opacity: 1; }
+
+.nav-links a.is-active::after { transform: scaleX(1); }
 
 /* ==========================================================================
    Hero
@@ -166,7 +199,7 @@ a { color: inherit; text-decoration: none; }
   font-family: 'Kumbh Sans', sans-serif;
   font-weight: 700;
   font-size: clamp(1.8rem, 1.1rem + 5.7vw, 9rem);
-  line-height: 0.86;
+  line-height: 0.82;
 }
 
 .hero-circle {
@@ -215,6 +248,36 @@ a { color: inherit; text-decoration: none; }
   translate: 0 -50%;
 }
 
+/* Entrance — a quiet staggered rise on load. Held back (paused) while the
+   preloader still covers the page so it plays as the preloader fades. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-line,
+  .hero-note-row,
+  .page-header {
+    animation: rise 1s var(--ease) both;
+  }
+
+  .hero-line:nth-child(2) { animation-delay: 0.08s; }
+  .hero-line:nth-child(3) { animation-delay: 0.16s; }
+  .hero-note-row { animation-delay: 0.32s; }
+
+  body.preloading .hero-line,
+  body.preloading .hero-note-row {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ==========================================================================
    Section wrapper
    ========================================================================== */
@@ -231,11 +294,11 @@ a { color: inherit; text-decoration: none; }
 }
 
 .page-header {
-  padding: 160px var(--page-margin) 80px;
+  padding: clamp(150px, 24vh, 220px) var(--page-margin) clamp(64px, 9vw, 100px);
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
   align-items: center;
 }
 
@@ -262,8 +325,8 @@ a { color: inherit; text-decoration: none; }
 .flow-stop-caption {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-top: 18px;
+  gap: 6px;
+  margin-top: 22px;
   text-align: center;
 }
 
@@ -272,7 +335,8 @@ a { color: inherit; text-decoration: none; }
    max-width (solo), not from forcing every photo into the same box shape. */
 .flow-photo {
   display: block;
-  border: 1px solid var(--placeholder-border);
+  border: 1px solid var(--hairline);
+  background: var(--placeholder-bg);
 }
 
 .flow-photos {
@@ -374,10 +438,9 @@ a { color: inherit; text-decoration: none; }
 .footer {
   background: var(--footer-bg);
   color: var(--footer-fg);
-  padding: var(--section-gap) var(--page-margin) 40px;
+  padding: var(--section-gap) var(--page-margin) 32px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
 }
 
 .footer-statement {
@@ -395,49 +458,84 @@ a { color: inherit; text-decoration: none; }
   gap: 48px;
   width: 100%;
   max-width: 620px;
-  margin: 0 auto;
+  margin: clamp(56px, 8vw, 104px) auto 0;
   text-align: left;
 }
 
 .footer-col-label {
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.72rem;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   opacity: 0.45;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .footer-col-links {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.footer-col-links a { font-size: 0.95rem; opacity: 0.85; }
+.footer-col-links a,
+.footer-col-links span {
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+
+.footer-col-links a {
+  position: relative;
+  display: inline-block;
+  transition: opacity 0.3s var(--ease);
+}
+
+.footer-col-links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s var(--ease-link);
+}
+
 .footer-col-links a:hover { opacity: 1; }
+
+.footer-col-links a:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
 
 .footer-bottom {
   display: flex;
   justify-content: center;
+  margin-top: clamp(56px, 8vw, 104px);
 }
 
 .footer-mark {
   font-family: 'Newsreader', serif;
   font-size: 1.3rem;
   opacity: 0.6;
+  transition: opacity 0.3s var(--ease);
 }
+
+.footer-mark:hover { opacity: 1; }
 
 .footer-meta {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
   opacity: 0.4;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255,255,255,0.1);
+  margin-top: 28px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* ==========================================================================
@@ -466,7 +564,7 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.6s var(--ease);
+  transition: opacity 0.8s var(--ease-media);
 }
 
 .preloader.is-done {
@@ -514,8 +612,9 @@ body.preloading {
 
 .preloader-percent {
   font-family: 'Inter', sans-serif;
-  font-weight: 600;
+  font-weight: 500;
   font-size: clamp(0.85rem, 0.7rem + 1vw, 1.15rem);
+  letter-spacing: 0.02em;
   color: var(--fg);
   min-width: 3.4em;
   font-variant-numeric: tabular-nums;

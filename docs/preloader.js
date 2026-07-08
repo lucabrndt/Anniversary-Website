@@ -67,6 +67,9 @@
     if (!heroImgEl || !heroImages.length) return;
     heroImgEl.src = heroImages[0];
     if (reducedMotion) return;
+    // Direct cut from one photo to the next — same feel as the preloader
+    // square, no gap in between. All photos are already warmed into the
+    // cache by the preloader, so swaps are instant.
     var heroIndex = 0;
     setInterval(function () {
       heroIndex = (heroIndex + 1) % heroImages.length;
@@ -74,11 +77,25 @@
     }, 2600);
   }
 
+  // Fire-and-forget cache warming for the skip paths below. Real Image()
+  // requests instead of <link rel="prefetch">, which Safari ignores
+  // entirely (that's how story.html ended up with unloaded photos despite
+  // the preloader having "run"). Kept in an array so no request can be
+  // garbage-collected mid-flight.
+  var warmedPhotos = [];
+  function warmPhotos() {
+    storyPhotos.forEach(function (src) {
+      var im = new Image();
+      im.src = src;
+      warmedPhotos.push(im);
+    });
+  }
+
   // Already played once this browser session (e.g. clicking "Home" again) —
   // skip straight past it, no re-animation, no scroll lock.
   if (alreadyShown) {
     pre.remove();
-    prefetchStoryPhotos();
+    warmPhotos();
     startHeroCycle();
     return;
   }
@@ -86,7 +103,7 @@
   if (reducedMotion) {
     sessionStorage.setItem(STORAGE_KEY, '1');
     pre.remove();
-    prefetchStoryPhotos();
+    warmPhotos();
     startHeroCycle();
     return;
   }
@@ -105,12 +122,16 @@
     }, 350);
   }
 
-  // Only wait for "critical" images (the ones visible without scrolling).
+  // Wait for the page's own images...
   var criticalImages = Array.prototype.slice.call(document.images).filter(function (img) {
     return img.id !== 'preloader-img' && img.loading !== 'lazy';
   });
 
-  var total = criticalImages.length;
+  // ...plus every photo the site uses (story.html's full set, which also
+  // contains all hero and preloader photos). Each one counts toward the
+  // percentage, so 100% genuinely means the whole site is in the cache
+  // and every page afterwards shows finished photos instantly.
+  var total = criticalImages.length + storyPhotos.length;
   var loaded = 0;
   var startTime = Date.now();
   var MIN_DURATION = 3000;
@@ -136,34 +157,30 @@
     if (cycleTimer) clearInterval(cycleTimer);
     pre.classList.add('is-done');
     document.body.classList.remove('preloading');
-    setTimeout(function () { pre.remove(); }, 700);
+    setTimeout(function () { pre.remove(); }, 900);
   }
 
-  function prefetchStoryPhotos() {
-    storyPhotos.forEach(function (src) {
-      var link = document.createElement('link');
-      link.rel = 'prefetch';
-      link.href = src;
-      document.head.appendChild(link);
-    });
-  }
+  updatePercent();
 
-  // Kick prefetching off right away — it's low priority in the browser,
-  // so it won't compete with this page's own images, and it has the
-  // whole homepage visit to finish quietly in the background.
-  prefetchStoryPhotos();
+  criticalImages.forEach(function (img) {
+    if (img.complete) {
+      onOneDone();
+    } else {
+      img.addEventListener('load', onOneDone, { once: true });
+      img.addEventListener('error', onOneDone, { once: true });
+    }
+  });
+
+  var trackedPhotos = storyPhotos.map(function (src) {
+    var im = new Image();
+    im.addEventListener('load', onOneDone, { once: true });
+    im.addEventListener('error', onOneDone, { once: true });
+    im.src = src;
+    return im;
+  });
 
   if (total === 0) {
     updatePercent();
     finishWhenReady();
-  } else {
-    criticalImages.forEach(function (img) {
-      if (img.complete) {
-        onOneDone();
-      } else {
-        img.addEventListener('load', onOneDone, { once: true });
-        img.addEventListener('error', onOneDone, { once: true });
-      }
-    });
   }
 })();
