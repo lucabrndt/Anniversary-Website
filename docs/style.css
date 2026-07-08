@@ -347,20 +347,12 @@ a { color: inherit; text-decoration: none; }
   gap: 16px;
 }
 
-.flow-stop.small .flow-photos {
-  max-width: 720px;
-  margin: 0 auto;
-}
-
-.flow-stop.small .flow-photo {
-  height: 300px;
-  width: auto;
-  max-width: 100%;
-  object-fit: contain;
-}
-
+/* One shared height for every photo row — small/big only differ in how
+   many photos they hold, not in visual weight, so nothing looks
+   arbitrarily shrunken next to its neighbours. */
+.flow-stop.small .flow-photo,
 .flow-stop.big .flow-photo {
-  height: 340px;
+  height: 360px;
   width: auto;
   max-width: 100%;
   object-fit: contain;
@@ -374,14 +366,23 @@ a { color: inherit; text-decoration: none; }
   max-width: 340px;
 }
 
+/* Solo photos are capped in both directions instead of being scaled by
+   width alone — otherwise tall portraits towered over everything while
+   landscapes shrank. Ratios always stay untouched. */
 .flow-stop.solo {
-  max-width: 420px;
   margin: 0 auto;
 }
 
 .flow-stop.solo .flow-photo {
-  width: 100%;
-  height: auto;
+  /* Same principle as the rows: one fixed height, width follows the
+     photo's own ratio (derived from the width/height attributes even
+     before the file loads). Solos sit a step above row height so a
+     featured moment still reads as featured. */
+  height: 480px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  margin: 0 auto;
 }
 
 /* ==========================================================================
@@ -548,6 +549,7 @@ a { color: inherit; text-decoration: none; }
   .flow-photos { flex-direction: column; align-items: center; max-width: 340px; margin: 0 auto; }
   .flow-stop.small .flow-photo,
   .flow-stop.big .flow-photo { height: auto; width: 100%; max-width: 320px; }
+  .flow-stop.solo .flow-photo { max-height: none; width: 100%; max-width: 320px; }
   .footer-columns { gap: 48px; }
   .hero-note { display: none; }
 }
