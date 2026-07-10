@@ -293,6 +293,21 @@ a { color: inherit; text-decoration: none; }
   text-align: center;
 }
 
+/* A few sentences, not one headline-scale line — its own smaller,
+   softer serif register so it reads as a quiet personal note under
+   the hero rather than competing with it. */
+.intro-text {
+  font-family: 'Newsreader', serif;
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(1.1rem, 1rem + 0.6vw, 1.4rem);
+  line-height: 1.65;
+  letter-spacing: -0.005em;
+  color: var(--fg);
+  opacity: 0.82;
+  margin: 0;
+}
+
 .page-header {
   padding: clamp(150px, 24vh, 220px) var(--page-margin) clamp(64px, 9vw, 100px);
   text-align: center;
@@ -390,11 +405,51 @@ a { color: inherit; text-decoration: none; }
    ========================================================================== */
 
 .counter {
-  padding: 40px var(--page-margin) var(--section-gap);
+  padding: 40px var(--page-margin) 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: clamp(40px, 7vw, 80px);
+}
+
+/* A quieter second stat below the main "years together" hero — same
+   family of numbers, deliberately smaller so the hierarchy stays clear:
+   the big count is the headline, this is a supporting note. */
+.reunion {
+  margin-top: clamp(56px, 9vw, 112px);
+  padding: clamp(48px, 8vw, 96px) var(--page-margin) var(--section-gap);
+  border-top: 1px solid var(--hairline);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.reunion-label {
+  opacity: 0.55;
+}
+
+.reunion-units {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(20px, 4vw, 48px);
+}
+
+.reunion-value {
+  font-size: clamp(1.5rem, 1.1rem + 1.8vw, 2.5rem);
+}
+
+.reunion-reached {
+  display: none;
+  font-family: 'Newsreader', serif;
+  font-weight: 500;
+  font-size: clamp(1.4rem, 1rem + 1.5vw, 2rem);
+  margin: 0;
+}
+
+.reunion-date {
+  opacity: 0.4;
 }
 
 .counter-hero {
@@ -585,9 +640,10 @@ body.preloading {
 }
 
 .preloader-asterisk {
-  font-family: 'Kumbh Sans', sans-serif;
-  font-weight: 700;
-  font-size: clamp(1.3rem, 1rem + 2vw, 2.5rem);
+  width: clamp(1.6rem, 1.2rem + 2vw, 3rem);
+  height: auto;
+  color: var(--fg);
+  flex-shrink: 0;
 }
 
 .preloader-bracket {

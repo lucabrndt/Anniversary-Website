@@ -55,11 +55,40 @@
     </div>
   </div>
 
+  <div class="reunion">
+    <p class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;" id="reunion-summary" aria-live="polite">Loading countdown&#8230;</p>
+
+    <p class="note reunion-label">Until we&rsquo;re together again</p>
+
+    <div class="reunion-units" id="reunion-units" aria-hidden="true">
+      <div class="counter-unit">
+        <span class="counter-unit-value reunion-value" id="r-days">00</span>
+        <span class="note">days</span>
+      </div>
+      <div class="counter-unit">
+        <span class="counter-unit-value reunion-value" id="r-hours">00</span>
+        <span class="note">hours</span>
+      </div>
+      <div class="counter-unit">
+        <span class="counter-unit-value reunion-value" id="r-mins">00</span>
+        <span class="note">minutes</span>
+      </div>
+      <div class="counter-unit">
+        <span class="counter-unit-value reunion-value" id="r-secs">00</span>
+        <span class="note">seconds</span>
+      </div>
+    </div>
+
+    <p class="reunion-reached" id="reunion-reached" aria-hidden="true">We&rsquo;re together again &#9825;</p>
+
+    <p class="note reunion-date">August 7, 2026 &middot; Thailand time</p>
+  </div>
+
 </main>
 
 <footer class="footer">
   <div class="footer-statement">
-    <p class="h2">[Placeholder &mdash; your personal closing line goes here]</p>
+    <p class="h2">I love you so much!</p>
   </div>
 
   <div class="footer-columns">
@@ -126,8 +155,40 @@
       'We have been together for ' + years + (years === 1 ? ' year' : ' years') + ' and ' + days + ' days.';
   }
 
+  var REUNION = new Date('2026-08-07T15:25:00+07:00');
+  var reunionUnitsEl = document.getElementById('reunion-units');
+  var reunionReachedEl = document.getElementById('reunion-reached');
+
+  function tickReunion() {
+    var now = new Date();
+    var diffMs = REUNION - now;
+
+    if (diffMs <= 0) {
+      reunionUnitsEl.style.display = 'none';
+      reunionReachedEl.style.display = 'block';
+      document.getElementById('reunion-summary').textContent = 'We’re together again.';
+      return;
+    }
+
+    var totalSeconds = Math.floor(diffMs / 1000);
+    var days = Math.floor(totalSeconds / 86400);
+    var hours = Math.floor((totalSeconds % 86400) / 3600);
+    var minutes = Math.floor((totalSeconds % 3600) / 60);
+    var seconds = totalSeconds % 60;
+
+    document.getElementById('r-days').textContent = days;
+    document.getElementById('r-hours').textContent = pad(hours);
+    document.getElementById('r-mins').textContent = pad(minutes);
+    document.getElementById('r-secs').textContent = pad(seconds);
+
+    document.getElementById('reunion-summary').textContent =
+      days + (days === 1 ? ' day' : ' days') + ' until we’re together again.';
+  }
+
   tick();
+  tickReunion();
   setInterval(tick, 1000);
+  setInterval(tickReunion, 1000);
 </script>
 </body>
 </html>
